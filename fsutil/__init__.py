@@ -998,3 +998,30 @@ def write_file_json(
         sort_keys=sort_keys,
     )
     write_file(path, content)
+
+    def files_larger_than(path, size: float, units="bytes", recursive=False) -> set:
+        """"
+        Gets the set of files (from path) whose sizes are greater than the specified size.
+        If recursive is set to True, also set for files within the subdirectory
+
+        """
+        assert_exists(path)
+        assert_not_file(os.path.abspath(path))
+        converted_size = convert_size_string_to_bytes("{} {}".format(size, units))
+
+        _files = set()
+        # If recursive is set to False, search only the specfied diectory
+        if not recursive:
+            for file in list_files(os.path.abspath(path)):
+                if os.path.getsize(file) > converted_size:
+                    _files.add(file)
+            return _files
+
+        # Otherwise walk through the entire directory searching for suc files
+        os.chdir(path)
+        for basename, dirs, files in os.walk(os.path.abspath(path)):
+            for file in files:
+                file_path = os.path.join(basename, file)
+                if os.path.getsize(file_path) > converted_size:
+                    _files.add(file_path)
+        return _files

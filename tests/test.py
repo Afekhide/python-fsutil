@@ -1024,6 +1024,13 @@ class fsutil_test_case(unittest.TestCase):
         )
         self.assertEqual(fsutil.read_file(path), "Hello World - Hello Sun")
 
+    def test_files_larger_than(self):
+        import os
+        path = os.getcwd()
+        files = fsutil.files_larger_than(path, 2.0, "bytes", recursvive=True)
+        import pprint
+        pprint.pprint(files)
+
 
 if __name__ == "__main__":
     unittest.main()
